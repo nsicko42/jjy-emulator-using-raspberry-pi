@@ -13,14 +13,10 @@
 #include <pigpio.h>
 
 #define PWM_OUT     18
+#define PWM_ON      500000
+#define PWM_OFF     0
 
-#define PWM_BASE_FREQ   192000.0F
-
-#define PWM_CLOCK       ((PWM_BASE_FREQ/PWM_FREQ)/PWM_RANGE)
-#define PWM_ON          500000
-#define PWM_OFF         0
-
-static int carrier_freq = 40000;
+static int carrier_freq = 0;
 static int quiet = 0;
 
 static int jjy_tick_ms(char type)
