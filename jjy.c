@@ -25,14 +25,9 @@
 static int carrier_freq = 40000;
 static int quiet = 0;
 
-unsigned char isLeapYear(short year)
+static int jjy_tick_ms(char type)
 {
-    return year % 4 == 0 && ((year % 100 != 0) || (year % 400 == 0));
-}
-
-char jjy_tick_100ms(char type)
-{
-    return 5 + (type * 3);
+    return 500 + (type * 300);
 }
 
 static void ASK_Off(void)
@@ -69,77 +64,78 @@ char get_current_jjy_tick(time_t time)
 
     switch(tm->tm_sec)
     {
-        case 0:  return jjy_tick_100ms(-1);
-        case 1:  return jjy_tick_100ms((tm->tm_min / 10) & 4);
-        case 2:  return jjy_tick_100ms((tm->tm_min / 10) & 2);
-        case 3:  return jjy_tick_100ms((tm->tm_min / 10) & 1);
-        case 4:  return jjy_tick_100ms(0);
-        case 5:  return jjy_tick_100ms((tm->tm_min % 10) & 8);
-        case 6:  return jjy_tick_100ms((tm->tm_min % 10) & 4);
-        case 7:  return jjy_tick_100ms((tm->tm_min % 10) & 2);
-        case 8:  return jjy_tick_100ms((tm->tm_min % 10) & 1);
-        case 9:  return jjy_tick_100ms(-1);
-        case 10: return jjy_tick_100ms(0);
-        case 11: return jjy_tick_100ms(0);
-        case 12: return jjy_tick_100ms((tm->tm_hour / 10) & 2);
-        case 13: return jjy_tick_100ms((tm->tm_hour / 10) & 1);
-        case 14: return jjy_tick_100ms(0);
-        case 15: return jjy_tick_100ms((tm->tm_hour % 10) & 8);
-        case 16: return jjy_tick_100ms((tm->tm_hour % 10) & 4);
-        case 17: return jjy_tick_100ms((tm->tm_hour % 10) & 2);
-        case 18: return jjy_tick_100ms((tm->tm_hour % 10) & 1);
-        case 19: return jjy_tick_100ms(-1);
-        case 20: return jjy_tick_100ms(0);
-        case 21: return jjy_tick_100ms(0);
-        case 22: return jjy_tick_100ms((tm->tm_yday / 100) & 2);
-        case 23: return jjy_tick_100ms((tm->tm_yday / 100) & 1);
-        case 24: return jjy_tick_100ms(0);
-        case 25: return jjy_tick_100ms(((tm->tm_yday / 10) % 10) & 8);
-        case 26: return jjy_tick_100ms(((tm->tm_yday / 10) % 10) & 4);
-        case 27: return jjy_tick_100ms(((tm->tm_yday / 10) % 10) & 2);
-        case 28: return jjy_tick_100ms(((tm->tm_yday / 10) % 10) & 1);
-        case 29: return jjy_tick_100ms(-1);
-        case 30: return jjy_tick_100ms((tm->tm_yday  % 10) & 8);
-        case 31: return jjy_tick_100ms((tm->tm_yday  % 10) & 4);
-        case 32: return jjy_tick_100ms((tm->tm_yday  % 10) & 2);
-        case 33: return jjy_tick_100ms((tm->tm_yday  % 10) & 1);
-        case 34: return jjy_tick_100ms(0);
-        case 35: return jjy_tick_100ms(0);
-        case 36: return jjy_tick_100ms(parity[tm->tm_hour]);
-        case 37: return jjy_tick_100ms(parity[tm->tm_min]);
-        case 38: return jjy_tick_100ms(0);
-        case 39: return jjy_tick_100ms(-1);
-        case 40: return jjy_tick_100ms(0);
-        case 41: return jjy_tick_100ms((tm->tm_year / 10) & 8);
-        case 42: return jjy_tick_100ms((tm->tm_year / 10) & 4);
-        case 43: return jjy_tick_100ms((tm->tm_year / 10) & 2);
-        case 44: return jjy_tick_100ms((tm->tm_year / 10) & 1);
-        case 45: return jjy_tick_100ms((tm->tm_year % 10) & 8);
-        case 46: return jjy_tick_100ms((tm->tm_year % 10) & 4);
-        case 47: return jjy_tick_100ms((tm->tm_year % 10) & 2);
-        case 48: return jjy_tick_100ms((tm->tm_year % 10) & 1);
-        case 49: return jjy_tick_100ms(-1);
-        case 50: return jjy_tick_100ms(tm->tm_wday & 4);
-        case 51: return jjy_tick_100ms(tm->tm_wday & 2);
-        case 52: return jjy_tick_100ms(tm->tm_wday & 1);
-        case 53: return jjy_tick_100ms(leaf & 2);
-        case 54: return jjy_tick_100ms(leaf & 1);
-        case 55: return jjy_tick_100ms(0);
-        case 56: return jjy_tick_100ms(0);
-        case 57: return jjy_tick_100ms(0);
-        case 58: return jjy_tick_100ms(0);
-        case 59: return jjy_tick_100ms(-1);
+        case 0:  return jjy_tick_ms(-1);
+        case 1:  return jjy_tick_ms((tm->tm_min / 10) & 4);
+        case 2:  return jjy_tick_ms((tm->tm_min / 10) & 2);
+        case 3:  return jjy_tick_ms((tm->tm_min / 10) & 1);
+        case 4:  return jjy_tick_ms(0);
+        case 5:  return jjy_tick_ms((tm->tm_min % 10) & 8);
+        case 6:  return jjy_tick_ms((tm->tm_min % 10) & 4);
+        case 7:  return jjy_tick_ms((tm->tm_min % 10) & 2);
+        case 8:  return jjy_tick_ms((tm->tm_min % 10) & 1);
+        case 9:  return jjy_tick_ms(-1);
+        case 10: return jjy_tick_ms(0);
+        case 11: return jjy_tick_ms(0);
+        case 12: return jjy_tick_ms((tm->tm_hour / 10) & 2);
+        case 13: return jjy_tick_ms((tm->tm_hour / 10) & 1);
+        case 14: return jjy_tick_ms(0);
+        case 15: return jjy_tick_ms((tm->tm_hour % 10) & 8);
+        case 16: return jjy_tick_ms((tm->tm_hour % 10) & 4);
+        case 17: return jjy_tick_ms((tm->tm_hour % 10) & 2);
+        case 18: return jjy_tick_ms((tm->tm_hour % 10) & 1);
+        case 19: return jjy_tick_ms(-1);
+        case 20: return jjy_tick_ms(0);
+        case 21: return jjy_tick_ms(0);
+        case 22: return jjy_tick_ms((tm->tm_yday / 100) & 2);
+        case 23: return jjy_tick_ms((tm->tm_yday / 100) & 1);
+        case 24: return jjy_tick_ms(0);
+        case 25: return jjy_tick_ms(((tm->tm_yday / 10) % 10) & 8);
+        case 26: return jjy_tick_ms(((tm->tm_yday / 10) % 10) & 4);
+        case 27: return jjy_tick_ms(((tm->tm_yday / 10) % 10) & 2);
+        case 28: return jjy_tick_ms(((tm->tm_yday / 10) % 10) & 1);
+        case 29: return jjy_tick_ms(-1);
+        case 30: return jjy_tick_ms((tm->tm_yday  % 10) & 8);
+        case 31: return jjy_tick_ms((tm->tm_yday  % 10) & 4);
+        case 32: return jjy_tick_ms((tm->tm_yday  % 10) & 2);
+        case 33: return jjy_tick_ms((tm->tm_yday  % 10) & 1);
+        case 34: return jjy_tick_ms(0);
+        case 35: return jjy_tick_ms(0);
+        case 36: return jjy_tick_ms(parity[tm->tm_hour]);
+        case 37: return jjy_tick_ms(parity[tm->tm_min]);
+        case 38: return jjy_tick_ms(0);
+        case 39: return jjy_tick_ms(-1);
+        case 40: return jjy_tick_ms(0);
+        case 41: return jjy_tick_ms((tm->tm_year / 10) & 8);
+        case 42: return jjy_tick_ms((tm->tm_year / 10) & 4);
+        case 43: return jjy_tick_ms((tm->tm_year / 10) & 2);
+        case 44: return jjy_tick_ms((tm->tm_year / 10) & 1);
+        case 45: return jjy_tick_ms((tm->tm_year % 10) & 8);
+        case 46: return jjy_tick_ms((tm->tm_year % 10) & 4);
+        case 47: return jjy_tick_ms((tm->tm_year % 10) & 2);
+        case 48: return jjy_tick_ms((tm->tm_year % 10) & 1);
+        case 49: return jjy_tick_ms(-1);
+        case 50: return jjy_tick_ms(tm->tm_wday & 4);
+        case 51: return jjy_tick_ms(tm->tm_wday & 2);
+        case 52: return jjy_tick_ms(tm->tm_wday & 1);
+        case 53: return jjy_tick_ms(leaf & 2);
+        case 54: return jjy_tick_ms(leaf & 1);
+        case 55: return jjy_tick_ms(0);
+        case 56: return jjy_tick_ms(0);
+        case 57: return jjy_tick_ms(0);
+        case 58: return jjy_tick_ms(0);
+        case 59: return jjy_tick_ms(-1);
     }
     return 0;
 }
 
 static void help_print(void)
 {
-    printf("Usage: jjy [OPTION]\r\n"
-           "           -h         Help\r\n"
-           "           -4         Carrier Frequency: 40kHz (default)\r\n"
-           "           -6         Carrier Frequency: 60kHz\r\n"
-           "           -q         Quiet mode\r\n");
+    printf("Usage: jjy [-h46q]\r\n\r\n"
+           "Option:\r\n"
+           "  -h         Help\r\n"
+           "  -4         Carrier Frequency: 40kHz (default)\r\n"
+           "  -6         Carrier Frequency: 60kHz\r\n"
+           "  -q         Quiet mode\r\n");
 }
 
 void exit_handler(void)
@@ -161,22 +157,40 @@ int main( int argc, char **argv )
     {
         switch (opt)
         {
-            case '4': carrier_freq = 40000; printf("Carrier frequency: 40kHz\r\n"); break;
-            case '6': carrier_freq = 60000; printf("Carrier frequency: 60kHz\r\n"); break;
+            case '4':
+            case '6':
+                if (carrier_freq == 0)
+                {
+                    carrier_freq = (opt-'0')*10000;
+                }
+                else
+                {
+                    fprintf(stderr, "Option -4 and -6 are mutually exclusive options.\r\n\r\n");
+                    help_print();
+                    exit(1);
+                }
+                break;
             case 'q': quiet = 1; break;
             default:
-            case '?': perror("Unkwon parameter\r\n");
+            case '?': fprintf(stderr, "Unkwon parameter\r\n\r\n");
             case 'h': help_print(); exit(1); break;
         }
     }
 
-    if (opt == 0)
+    if (carrier_freq == 0)
     {
+        carrier_freq = 40000;
         printf("Default carrier frequency: 40kHz\r\n");
+    }
+    else
+    {
+        printf("Carrier frequency: %dkHz\r\n", carrier_freq / 1000);
     }
 
     ASK_Off();
     atexit(exit_handler);
+
+    printf("Press [ENTER] to stop the transmission.\r\n");
 
     // main loop
     while(1)
