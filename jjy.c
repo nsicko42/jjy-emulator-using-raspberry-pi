@@ -4,9 +4,7 @@
 //
 // make : gcc -Wall -o jjy jjy.c -lpigpio -lrt
 //
-// run : ./jjy &
-//
-// jjy signal is transmitted with 40kHz carrier frequency via 23 pin if it run successully.
+// jjy signal is transmitted with 40kHz or 60kHz carrier frequency via 18 pin if it run successully.
 //
 #include <stdio.h>
 #include <stdlib.h>
