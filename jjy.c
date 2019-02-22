@@ -18,11 +18,12 @@
 
 #define PWM_BASE_FREQ   192000.0F
 
-#define PWM_FREQ        40000
-#define PWM_RANGE       100
 #define PWM_CLOCK       ((PWM_BASE_FREQ/PWM_FREQ)/PWM_RANGE)
 #define PWM_ON          500000
 #define PWM_OFF         0
+
+static int carrier_freq = 40000;
+static int quiet = 0;
 
 unsigned char isLeapYear(short year)
 {
@@ -36,12 +37,12 @@ char jjy_tick_100ms(char type)
 
 static void ASK_Off(void)
 {
-    gpioHardwarePWM(PWM_OUT, PWM_FREQ, PWM_OFF);
+    gpioHardwarePWM(PWM_OUT, carrier_freq, PWM_OFF);
 }
 
 static void ASK_On(unsigned char tm_ms)
 {
-    gpioHardwarePWM(PWM_OUT, PWM_FREQ, PWM_ON);
+    gpioHardwarePWM(PWM_OUT, carrier_freq, PWM_ON);
     gpioSleep(PI_TIME_RELATIVE, tm_ms / 1000 , (tm_ms % 1000) * 1000);
     ASK_Off();
 }
@@ -132,10 +133,17 @@ char get_current_jjy_tick(time_t time)
     return 0;
 }
 
+static void help_print(void)
+{
+    printf("Usage: jjy [OPTION]\r\n"
+           "           -h         Help\r\n"
+           "           -4         Carrier Frequency: 40kHz (default)\r\n"
+           "           -6         Carrier Frequency: 60kHz\r\n"
+           "           -q         Quiet mode\r\n");
+}
+
 void exit_handler(void)
 {
-    ASK_Off();
-    gpioTerminate();
 }
 
 int main( int argc, char **argv )
@@ -147,6 +155,24 @@ int main( int argc, char **argv )
     {
         perror(argv[0]);
         exit(-1);
+    }
+
+    while ((opt = getopt(argc, argv, "h46q")) != -1)
+    {
+        switch (opt)
+        {
+            case '4': carrier_freq = 40000; printf("Carrier frequency: 40kHz\r\n"); break;
+            case '6': carrier_freq = 60000; printf("Carrier frequency: 60kHz\r\n"); break;
+            case 'q': quiet = 1; break;
+            default:
+            case '?': perror("Unkwon parameter\r\n");
+            case 'h': help_print(); exit(1); break;
+        }
+    }
+
+    if (opt == 0)
+    {
+        printf("Default carrier frequency: 40kHz\r\n");
     }
 
     ASK_Off();
@@ -161,10 +187,29 @@ int main( int argc, char **argv )
         {
             ASK_On(get_current_jjy_tick(now));
             old = now;
+            if (!quiet)
+            {
+                struct tm * tm = localtime(&now);
+                printf("%02d-%02d-%02d %02d:%02d:%02d %dkHz\r\n",
+                        tm->tm_year-100, tm->tm_mon+1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, carrier_freq/1000);
+            }
         }
         else
         {
-            gpioSleep(PI_TIME_RELATIVE, 0, 10000); // sleep for 0.01 secs
+            fd_set s;
+            FD_ZERO(&s);
+
+            fflush(stdin);
+
+            struct timeval  timeout;
+
+            FD_SET(STDIN_FILENO, &s);
+            timeout.tv_sec = 0;
+            timeout.tv_usec = 0;
+            if (select(STDIN_FILENO+1, &s, NULL, NULL, &timeout) > 0)
+            {
+                if (FD_ISSET(STDIN_FILENO, &s)) return 0;
+            }
         }
     }
 
