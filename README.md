@@ -1,4 +1,5 @@
-# jjy-simulator-using-raspberry-pi
+jjy-simulator-using-raspberry-pi
+==============
 
 ## 1. Abstract
 JJY simulator using Raspberry Pi
@@ -17,12 +18,15 @@ It makes carrier frequency (40kHz, optional 60kHz) using Hardware PWM of GPIO18(
 -6 Carrier Frequency 60kHz
 -q Quiet mode</pre>
 
-## Reference
+### Reference
 http://jjy.nict.go.jp/jjy/index-e.html
 
----
 
-# <한국어 안내>
+
+***
+라즈베리파이용 JJY 시뮬레이터
+==============
+
 
 ## 1. 개요
 Raspberry Pi를 이용한 JJY simulator
