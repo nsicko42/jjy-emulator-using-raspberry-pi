@@ -21,6 +21,7 @@ static int quiet = 0;
 
 static int jjy_tick_ms(char type)
 {
+    if (type > 0) type = 1;
     return 500 + (type * 300);
 }
 
@@ -52,7 +53,7 @@ char get_current_jjy_tick(time_t time)
         return -1;
     }
 
-    tm->tm_year += 1900;
+    tm->tm_year %= 100;
     tm->tm_mon += 1;
     tm->tm_yday += 1;
 
@@ -198,8 +199,18 @@ int main( int argc, char **argv )
             if (!quiet)
             {
                 struct tm * tm = localtime(&now);
-                printf("%02d-%02d-%02d %02d:%02d:%02d %dkHz\r\n",
-                        tm->tm_year-100, tm->tm_mon+1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, carrier_freq/1000);
+                if (tm->tm_sec == 0)
+                {
+                    fprintf(stdout, "\r\n%02d-%02d-%02d %02d:%02d %dkHz\r\n",
+                                    tm->tm_year%100, tm->tm_mon+1, tm->tm_mday, tm->tm_hour, tm->tm_min, carrier_freq/1000);
+                }
+                switch(tx_ms)
+                {
+                    case 200: fprintf(stdout, "|"); break;
+                    case 500: fprintf(stdout, "."); break;
+                    case 800: fprintf(stdout, "-"); break;
+                    default: break;
+                }
             }
         }
         else
